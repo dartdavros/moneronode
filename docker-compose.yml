@@ -1,0 +1,30 @@
+services:
+  monerod:
+    container_name: monerod
+    build: .
+    networks:
+      - monero-network
+    ports:
+      - 18081:180801
+      - 28081:28081 # testnet
+    volumes:
+      - ./monero-data:/root/.bitmonero
+    command: "/app/monerod --config-file=/app/monerod.conf --detach"
+    restart: unless-stopped
+  monero-wallet:
+    container_name: monero-wallet
+    build: .
+    networks:
+      - monero-network
+    ports:
+      - 18089:18089
+      - 28089:28089 #testnet
+    volumes:
+      - ./monero-data:/root/.bitmonero
+    command: "/app/monero-wallet-rpc --config-file=/app/monero-wallet.conf"
+    restart: unless-stopped
+    depends_on:
+      - monerod
+networks:
+  monero-network:
+    external: true
